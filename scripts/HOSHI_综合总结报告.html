@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hoshi 策略验证链 · 综合总结报告</title>
+<style>
+  :root{
+    --bg:#0f1420; --panel:#161d2e; --panel2:#1b2438; --line:#2a3550;
+    --txt:#e6ecf5; --mut:#8b98b3; --red:#ff5d5d; --green:#3ddc97; --amber:#ffb648;
+    --blue:#58a6ff; --purple:#b48cff; --cyan:#39d2f4;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.6;padding:32px 20px}
+  .wrap{max-width:1080px;margin:0 auto}
+  h1{font-size:26px;font-weight:700;letter-spacing:.5px}
+  .sub{color:var(--mut);font-size:13px;margin-top:6px}
+  .rule{height:1px;background:linear-gradient(90deg,var(--line),transparent);margin:18px 0 26px}
+  .tldr{background:linear-gradient(135deg,#17233f,#1d2a4a);border:1px solid #2b3f6e;border-radius:12px;padding:20px 22px;margin-bottom:28px}
+  .tldr h2{font-size:15px;color:var(--amber);margin-bottom:10px;letter-spacing:1px}
+  .tldr ol{margin-left:20px}
+  .tldr li{margin-bottom:7px;font-size:14px}
+  h2.sec{font-size:18px;margin:34px 0 14px;padding-left:10px;border-left:4px solid var(--blue);color:var(--txt)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:16px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:820px){.grid2{grid-template-columns:1fr}}
+  .kpi{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:6px}
+  .kpi .box{flex:1;min-width:150px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;text-align:center}
+  .kpi .num{font-size:22px;font-weight:700}
+  .kpi .lab{font-size:12px;color:var(--mut);margin-top:2px}
+  .pos{color:var(--green)} .neg{color:var(--red)} .warn{color:var(--amber)} .info{color:var(--blue)}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
+  th{background:var(--panel2);color:var(--mut);font-weight:600;padding:8px 10px;text-align:center;border:1px solid var(--line)}
+  td{padding:7px 10px;text-align:center;border:1px solid var(--line)}
+  td.l,th.l{text-align:left}
+  tr.hl td{background:rgba(61,220,151,.07)}
+  tr.wl td{background:rgba(255,93,93,.06)}
+  .badge{display:inline-block;padding:1px 8px;border-radius:20px;font-size:11px;font-weight:600;margin-left:6px;vertical-align:middle}
+  .b-green{background:rgba(61,220,151,.15);color:var(--green)}
+  .b-red{background:rgba(255,93,93,.15);color:var(--red)}
+  .b-grey{background:rgba(139,152,179,.15);color:var(--mut)}
+  .note{font-size:12.5px;color:var(--mut)}
+  ul.tight{margin-left:20px} ul.tight li{margin-bottom:5px;font-size:13.5px}
+  .callout{border-left:3px solid var(--amber);background:rgba(255,182,72,.06);padding:10px 14px;border-radius:0 8px 8px 0;font-size:13.5px;margin:10px 0}
+  .callout.red{border-left-color:var(--red);background:rgba(255,93,93,.06)}
+  .callout.green{border-left-color:var(--green);background:rgba(61,220,151,.06)}
+  .verdict{background:linear-gradient(135deg,#15301f,#1d3d29);border:1px solid #2d6a44;border-radius:12px;padding:18px 22px;margin-top:6px}
+  .verdict h3{color:var(--green);font-size:16px;margin-bottom:8px}
+  .file{font-family:Consolas,"Courier New",monospace;font-size:12px;background:#0c111c;border:1px solid var(--line);padding:1px 6px;border-radius:4px;color:var(--cyan)}
+  .foot{margin-top:30px;color:var(--mut);font-size:12px;text-align:center;padding-bottom:20px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>🐚 Hoshi 策略验证链 · 综合总结报告</h1>
+<div class="sub">quant-trader ｜ 验证周期 2026-08-26 ~ 09-03 ｜ 权威口径：唯一最终版（Hoshi_QMT_Kit）｜ 数据截至 2026-09-01（baostock 全量 1990 至今）</div>
+<div class="rule"></div>
+
+<div class="tldr">
+<h2>TL;DR — 五句话结论</h2>
+<ol>
+  <li><b>hoshi 是"抄底反弹 beta"型策略</b>：R3 暴跌期空仓 + 门控放行的企稳日一次性满仓 10 只。同一日买 9~10 只是文档明文设计，不是 bug。</li>
+  <li><b>原版（不限买入 + 第 15 天止损）在 2026 各真实窗口全面最优</b>：6-1 至今 <span class="pos">+10.94%</span>、4-1 至今 <span class="pos">+27.41%</span>、今年 <span class="pos">+26.44%</span>。</li>
+  <li><b>三条改进路线全部经多窗口验证后被否决</b>：A 每日限买 5 只（完整周期转负）、B 固定提前止损（单路径 +58% 是过拟合）、regime 自适应止损（MA 信号滞后，2026 全面跑输）。</li>
+  <li><b>回测纪律铁律</b>：15.5 年完整周期原版仅 <span class="pos">+2.42%</span>（R3 停手 35 次），策略无跨周期累积 alpha——收益高度依赖牛市/反弹段的择时命中。</li>
+  <li><b>实盘建议：维持原版不动</b>。所有"改进"在完整周期或多窗口检验下都不如原版；唯一可选的极端风控是"全程硬止损"，但只宜在明确看空时临时开启。</li>
+</ol>
+</div>
+
+<h2 class="sec">① 权威口径（唯一最终版，勿再引入变体）</h2>
+<div class="card">
+  <ul class="tight">
+    <li><b>策略定义</b>：<span class="file">hoshi_final_strategy.md</span>（来自用户提供的 <span class="file">Hoshi_QMT_Kit(1).zip</span>），对应服务器 <span class="file">hoshi_final_adaptive.py</span>。</li>
+    <li><b>权威回测器</b>：<span class="file">.workbuddy/hoshi_qmt_kit/Hoshi_QMT_Kit/独立CSV回测器/hoshi_backtest_csv.py</span> —— 本次所有实验的基准。</li>
+    <li><b>撮合时序（源码确认）</b>：信号用截止昨天的数据（D 日收盘确认）→ <b>D+1 开盘价买入</b>；卖出在当日 K 线内部用 high/low 判定止盈/止损触发（隐含条件单可成交假设）。回测器本身不产出条件单对象。</li>
+    <li><b>出场机制</b>：止盈 S3/S4 自适应；<b>止损第 15 天才开始监控</b>（前 14 天裸奔）= <span class="file">LOSS_START_DAY=15</span>。</li>
+    <li><b>R3 大盘保护</b>：权益回撤 &gt;25% 停手、冷却 60 天（升级 120 天）。</li>
+  </ul>
+</div>
+
+<h2 class="sec">② 战绩速览 — 最终版 6-1 至今（2026-06-01 ~ 09-01，50 万本金）</h2>
+<div class="card">
+  <div class="kpi">
+    <div class="box"><div class="num pos">+10.94%</div><div class="lab">总收益（¥554,707）</div></div>
+    <div class="box"><div class="num">22 笔</div><div class="lab">成交笔数</div></div>
+    <div class="box"><div class="num pos">+¥28,945</div><div class="lab">已卖出 12 笔（止盈9/止损3）</div></div>
+    <div class="box"><div class="num pos">+¥25,762</div><div class="lab">仍持有 10 只浮盈（8-24 买入）</div></div>
+  </div>
+  <div class="note" style="margin-top:10px">时间线：6 月初买入 → 6/18~7/09 获利了结 + 止损 3 笔 → 7 月暴跌触发 R3 停手（当月 0 买入）→ 8-24 恢复开仓买入 10 只持有至今。明细：<span class="file">scripts/r_final_6m/hoshi_trades.csv</span></div>
+</div>
+
+<h2 class="sec">③ 三条改进路线 — 全部验证、全部否决</h2>
+
+<div class="card">
+  <h3 style="font-size:15px;margin-bottom:8px">A. 每日限买 N 只（分散约束）<span class="badge b-red">否决</span></h3>
+  <div class="grid2">
+    <div>
+      <table>
+        <tr><th class="l">15.5 年完整周期</th><th>收益%</th></tr>
+        <tr class="hl"><td class="l">原版（不限）</td><td class="pos">+2.42</td></tr>
+        <tr><td class="l">限买 5 只（A 方案）</td><td class="neg">−8.47</td></tr>
+        <tr><td class="l">限买 8 只</td><td class="neg">−14.24</td></tr>
+        <tr><td class="l">限买 3 只</td><td class="neg">−23.12</td></tr>
+      </table>
+    </div>
+    <div>
+      <ul class="tight">
+        <li><b>限得越狠亏得越多</b>——R3 门控已主导空仓节奏（35 次三档全同），限买不改变"何时空仓"，只砍掉牛市反弹段唯一利润源。</li>
+        <li>多窗口 13 样本：原版均值 <span class="pos">+25.74%</span> 最高；限 5 仅 +17.14%，只在纯震荡弱市（2020-23）反超。</li>
+        <li>定性：限 5 = "牛市少赚、弱市抗跌"的风险平滑器，非收益提升。</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h3 style="font-size:15px;margin-bottom:8px">B. 固定提前止损起始日 <span class="badge b-red">否决（单路径过拟合）</span></h3>
+  <div class="grid2">
+    <div>
+      <table>
+        <tr><th class="l">单路径 15.5 年</th><th>收益%</th></tr>
+        <tr><td class="l">原版（第15天）</td><td class="pos">+2.42</td></tr>
+        <tr><td class="l">第 10 天</td><td class="pos">+57.57</td></tr>
+        <tr><td class="l">第 7 天</td><td class="pos">+58.95</td></tr>
+        <tr><td class="l">全程（第 1 天）</td><td class="pos">+20.91</td></tr>
+      </table>
+      <div class="note">⚠️ 曾误判第 7~10 天是甜点区</div>
+    </div>
+    <div>
+      <ul class="tight">
+        <li><b>5 个独立 regime 窗口验证：提前止损 5/5 全劣于原版</b>（取 10/7 天中较优者仍无法稳健胜出）。</li>
+        <li>15.5 年单路径 +58% 是"单一路径 × 特定止损日"的偶然组合。<b>方向 B 被推翻。</b></li>
+      </ul>
+      <div class="callout red">教训：单路径参数扫描极易出假阳性，必须多窗口稳健性把关。</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h3 style="font-size:15px;margin-bottom:8px">C. regime 自适应止损（09-03 最新实验）<span class="badge b-red">否决（信号滞后）</span></h3>
+  <div class="grid2">
+    <div>
+      <table>
+        <tr><th class="l">分组均值收益%</th><th>原版15</th><th>regime15/7</th></tr>
+        <tr><td class="l">独立5个历史窗口</td><td>+13.53</td><td class="pos">+28.10</td></tr>
+        <tr class="wl"><td class="l">2026真实4个窗口</td><td class="pos">+15.79</td><td>+10.85</td></tr>
+      </table>
+      <div class="note">regime = 指数&gt;MA20&gt;MA60 判多头(15天止损)否则弱势(7天止损)</div>
+    </div>
+    <div>
+      <ul class="tight">
+        <li><b>利好</b>：大幅收敛尾部风险（最差单笔 −52~−65% → −18~−30%），历史长熊窗口（2014-18 +60pp）大胜。</li>
+        <li><b>致命伤</b>：MA60 regime 在 2026-06 后全程判"弱市" → 等于全程恒第 7 天 → 2026 反弹市 0/4 窗口跑输原版，把该让盈利票跑的仓位第 7 天误杀。</li>
+        <li>与广度门控 MA60 滞后 <b>同源</b>：任何全局慢指标都追不上 hoshi 的"企稳日满仓"拐点。</li>
+      </ul>
+      <div class="callout red">结论：任何"固定 or 慢速 regime 触发"都无法兼顾"熊市早止损"与"反弹市让票跑"。</div>
+    </div>
+  </div>
+</div>
+
+<h2 class="sec">④ 关键机制认知（回答此前所有"为什么"）</h2>
+<div class="card">
+  <ul class="tight">
+    <li><b>为什么一天买 9~10 只？</b> 策略文档明文设计：门控放行且空位&lt;10 时，把当天所有 score≥8 候选按分从高到低逐个买，<b>满 10 只才停、不排队等次日</b>。信号扎堆日 = R3 解除 + 广度放行 + 反弹起点（6-01、8-24 都是这种"门控放行的企稳日"）。</li>
+    <li><b>7 月团灭真因</b>：2026-07 当月原版实际买入 0 笔（R3 已停手）；近一年真实亏损源是 <b>2025-09-01 一波买入 10 只全部 9-19 止损</b>（最惨 300204 −31.8%）。</li>
+    <li><b>为什么广度门控没拦住 7-01 接飞刀？</b> 广度用 MA60，滞后指数拐点约 <b>13 个交易日</b>。指数 6-25 见顶时广度仍 24%（放行），等 7-13 跌破 20% 线已深套——门控只拦新仓、救不了旧仓。</li>
+    <li><b>盈利来源</b>：全年 +20% 靠 2026-01 单月（+60k，占 59%）。下跌 regime（尤其初段）必挨打。</li>
+    <li><b>"每半年增资"条款</b>：查遍策略文档、脚本、历史记录，<b>均不存在</b>。最终版是固定起始本金、中途不追加。</li>
+  </ul>
+</div>
+
+<h2 class="sec">⑤ 数据基建（本次会话的可复用资产）</h2>
+<div class="card">
+  <ul class="tight">
+    <li><b>baostock 全量补数</b>：7351 只 → 2952 万行 K 线，1990-12-19 ~ 2026-09-01，存于 <span class="file">data/tdx.duckdb</span>。</li>
+    <li><b>代码段白名单过滤（血泪教训）</b>：只留 sh600/601/603/605/688 + sz000/001/002/003/300/301。否则混入国债逆回购（sh204003 "价格"是年化利率 14.55%）会被当股价算出 −98.96% 假暴跌。</li>
+    <li><b>长历史 CSV 池</b>：<span class="file">scripts/hoshi_csv_long/</span> = 5262 只白名单 × 2009-06 至今（4195 交易日），支撑任意 2~15 年回测。</li>
+    <li><b>MA 预热约束</b>：回测器要求每只 ≥66 根 K 线（MA60），45 天窗口会 0 成交——生产回测必须给足历史预热。</li>
+  </ul>
+</div>
+
+<h2 class="sec">⑥ 实盘建议（最终裁决）</h2>
+<div class="verdict">
+  <h3>✅ 维持原版不动：不限买入 + 第 15 天止损</h3>
+  <ul class="tight">
+    <li>2026 各真实窗口原版全面最优（6-1 <span class="pos">+10.94%</span> / 4-1 <span class="pos">+27.41%</span> / 今年 <span class="pos">+26.44%</span>）。</li>
+    <li>所有被提议的"改进"（限买、提前止损、regime 自适应）经多窗口 + 完整周期检验后均不如原版。</li>
+    <li><b>可选极端风控</b>：全程硬止损（--loss-start-day 1）能把最差单笔从 −33.7% 收敛到 −18.4%，但在 2026 反弹市打负收益 —— 只宜在明确看空/极端熊市预期下临时开启，不可常态化。</li>
+    <li><b>认知底线</b>：hoshi 无跨周期累积 alpha（15.5 年仅 +2.42%），它是"牛市/反弹市 beta 放大器 + R3 熊市空仓"的择时工具——收益上限取决于能否在正确的 regime 段运行。</li>
+  </ul>
+</div>
+
+<h2 class="sec">⑦ 交付物清单</h2>
+<div class="card">
+  <table>
+    <tr><th class="l">文件</th><th class="l">用途</th></tr>
+    <tr><td class="l"><span class="file">scripts/hoshi_regime_backtest.py</span></td><td class="l">regime 自适应止损回测器（--regime / --regime-weak-day / --regime-bull-day）</td></tr>
+    <tr><td class="l"><span class="file">scripts/hoshi_regime_validate.py</span> + .log</td><td class="l">09-03 regime 9 窗口验证</td></tr>
+    <tr><td class="l"><span class="file">scripts/hoshi_regime/sh000001.csv</span></td><td class="l">上证指数 2008 至今（regime 判定源）</td></tr>
+    <tr><td class="l"><span class="file">scripts/hoshi_backtest_limitn.py</span></td><td class="l">限买 N + 止损起始日参数化回测器（--max-buy-per-day / --loss-start-day）</td></tr>
+    <tr><td class="l"><span class="file">scripts/hoshi_dispersion_test.py</span> + seed7/13/99 .log</td><td class="l">A 方案多节点稳健性实验</td></tr>
+    <tr><td class="l"><span class="file">scripts/hoshi_fullrun.py</span> + hoshi_fullrun_15y.log</td><td class="l">15.5 年完整周期长跑（决定性证据）</td></tr>
+    <tr><td class="l"><span class="file">scripts/hoshi_stopstart_test/validate.py</span> + .log</td><td class="l">B 方案止损起始日敏感性 + 多窗口推翻验证</td></tr>
+    <tr><td class="l"><span class="file">scripts/hoshi_july_diag.py</span> + .log</td><td class="l">近一年逐笔诊断（修正"7 月团灭"认知）</td></tr>
+    <tr><td class="l"><span class="file">scripts/hoshi_2026_real_windows.py</span> + .log</td><td class="l">2026 真实窗口原版 vs 硬止损裁决</td></tr>
+    <tr><td class="l"><span class="file">scripts/hoshi_csv_long/</span></td><td class="l">5262 只 × 17 年长历史白名单 CSV（复用核心资产）</td></tr>
+    <tr><td class="l"><span class="file">scripts/export_hoshi_csv.py</span></td><td class="l">DuckDB→CSV 导出器（白名单过滤）</td></tr>
+  </table>
+</div>
+
+<div class="foot">hoshi 策略验证链综合总结 ｜ 生成于 2026-09-03 ｜ 完整实验细节见 .workbuddy/memory/2026-09-02.md 与 2026-09-03.md</div>
+</div>
+</body>
+</html>

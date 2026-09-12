@@ -1,0 +1,2 @@
+﻿[30/30] 2013-07~2016-06 (36鏈? 鏈柟妗? +203.90% | 鍘熺増  +118.18% | h5s9   +46.99% | 绗旀暟 434
+DONE t5 -> C:\Users\cody\PycharmProjects\quant-trader\scripts\hoshi_oos30_t5.csv

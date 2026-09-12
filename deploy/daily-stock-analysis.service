@@ -1,0 +1,35 @@
+[Unit]
+Description=Daily Stock Analysis AI service (quant-trader T007 dependency)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=cody
+Group=cody
+WorkingDirectory=/home/cody/projects/quant-trader/daily_stock_analysis
+EnvironmentFile=-/home/cody/projects/quant-trader/daily_stock_analysis/.env
+ExecStart=/home/cody/projects/quant-trader/daily_stock_analysis/.venv/bin/uvicorn server:app \
+    --host 0.0.0.0 --port 8010 \
+    --log-level info --workers 1
+Restart=on-failure
+RestartSec=5s
+KillSignal=SIGINT
+TimeoutStopSec=30s
+
+NoNewPrivileges=true
+ProtectSystem=full
+PrivateTmp=true
+ProtectHome=read-only
+ReadWritePaths=/home/cody/projects/quant-trader/daily_stock_analysis
+
+LimitNOFILE=65536
+MemoryHigh=2G
+MemoryMax=3G
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=daily-stock-analysis
+
+[Install]
+WantedBy=multi-user.target

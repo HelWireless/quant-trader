@@ -1,0 +1,7 @@
+hoshi_oos2_base.csv              rows=30   header=start,end,len_months,base_pct,trades
+hoshi_oos2_h5s9.csv              rows=25   header=start,end,len_months,h5s9_pct,trades
+hoshi_oos2_t5.csv                rows=17   header=start,end,len_months,t5_pct,trades
+hoshi_oos2_windows.csv           rows=30   header=start,end,len_months
+hoshi_oos30_s4.csv               rows=30   header=start,end,len_months,base_pct,h5s9_pct,s4_pct,trades
+hoshi_oos30_t1.csv               rows=30   header=start,end,len_months,base_pct,h5s9_pct,t1_pct,trades
+hoshi_oos30_t5.csv               rows=30   header=start,end,len_months,base_pct,h5s9_pct,t5_pct,trades

@@ -1,0 +1,3 @@
+hoshi_oos30.py -> hoshi_fix30.py
+hoshi_oos2.py -> hoshi_fix2.py
+hoshi_worst_entry.py -> hoshi_worstfix.py

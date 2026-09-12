@@ -1,0 +1,81 @@
+# ============================================================
+# quant-trader .gitignore
+# 原则：只提交自研源码；数据 / 第三方库 / 子仓库 / 密钥一律排除
+# ============================================================
+
+# ---------- 数据（体积巨大，不入库）----------
+data/
+scripts/hoshi_csv_long/
+*.csv
+*.tsv
+*.db
+*.duckdb
+*.sqlite3
+*.day
+cache/
+
+# 例外：回测窗口定义属于「配置」而非数据，体积小且对复现必要
+!scripts/hoshi_time_corr_windows.csv
+!scripts/hoshi_oos2_windows.csv
+
+# ---------- 第三方库 / 外部仓库（各自独立，勿并入）----------
+qlib/
+pytdx/
+OpenStock-Enhanced/
+daily_stock_analysis/
+tdx2db/
+a-stock-data/
+
+# ---------- 密钥与环境变量 ----------
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+secrets/
+
+# ---------- Python ----------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+.eggs/
+.venv/
+venv/
+env/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# ---------- Node ----------
+node_modules/
+.next/
+out/
+
+# ---------- IDE ----------
+.idea/
+.vscode/
+*.swp
+*.swo
+*.code-workspace
+
+# ---------- 日志与临时产物 ----------
+logs/
+*.log
+*.stackdump
+claude-progress.txt
+nohup.out
+tmp/
+temp/
+
+# ---------- 本地 agent 工作区数据 ----------
+.workbuddy/
+
+# ---------- 操作系统 ----------
+.DS_Store
+Thumbs.db
+desktop.ini

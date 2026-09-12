@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hoshi 策略近两月深挖报告（2026-07~09 regime 归因）</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  :root{--bg:#f7f7f5;--card:#ffffff;--ink:#1a1a1a;--mut:#666;--line:#e5e5e0;
+    --red:#c0392b;--redbg:#fdecea;--green:#1e8449;--greenbg:#eaf6ee;--blue:#1f5fa8;--bluebg:#e8f1fb;
+    --amber:#b9770e;--gray:#888;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.65;padding:32px 20px}
+  .wrap{max-width:960px;margin:0 auto}
+  h1{font-size:22px;font-weight:600;margin-bottom:6px}
+  .sub{color:var(--mut);font-size:13px;margin-bottom:28px}
+  h2{font-size:17px;font-weight:600;margin:34px 0 14px;padding-top:8px;border-top:1px solid var(--line)}
+  h3{font-size:14px;font-weight:600;margin:18px 0 8px;color:var(--ink)}
+  p{font-size:13.5px;margin:8px 0}
+  .lead{font-size:14px;color:#333;background:#fff;border:1px solid var(--line);border-left:4px solid var(--blue);padding:14px 16px;border-radius:6px;margin:16px 0}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:14px 0}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+  .card .k{font-size:11.5px;color:var(--mut)}
+  .card .v{font-size:24px;font-weight:600;margin-top:2px}
+  .card .s{font-size:11.5px;color:var(--mut);margin-top:2px}
+  .pos{color:var(--red)} .neg{color:var(--green)}
+  table{border-collapse:collapse;width:100%;font-size:12.5px;margin:12px 0;background:#fff}
+  th,td{border:1px solid var(--line);padding:6px 10px;text-align:right}
+  th{background:#f1f1ee;font-weight:600;text-align:center}
+  td:first-child{text-align:left}
+  .chartbox{position:relative;width:100%;height:320px;margin:8px 0}
+  .tag{display:inline-block;padding:1px 8px;border-radius:10px;font-size:11.5px;margin-left:6px;vertical-align:middle}
+  .tag.crash{background:var(--greenbg);color:var(--green);font-weight:600}
+  .tag.rally{background:var(--redbg);color:var(--red);font-weight:600}
+  ul{margin:8px 0 8px 20px;font-size:13.5px}
+  li{margin:4px 0}
+  .note{font-size:12px;color:var(--mut);background:#f4f4f1;border-radius:6px;padding:10px 14px;margin:14px 0}
+  .find{background:#fff8e6;border:1px solid #f0dcae;border-left:4px solid var(--amber);padding:12px 14px;border-radius:6px;margin:14px 0;font-size:13.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Hoshi 策略 · 近两月 regime 深度归因</h1>
+<div class="sub">2026-07-01 ~ 2026-09-01 · 数据源 baostock(本地 duckdb) · 股票池 5016 只(白名单过滤) · 真实完整交易规则(S3/S4+R3+广度+资金管理)</div>
+
+<div class="lead">
+<strong>一句话结论：</strong>近两月 hoshi 跑出 <span class="neg">-32%（原版）/ -5.4%（全程止损）</span>，直接原因是 <strong>2026-06-25~07-17 单边暴跌 regime 中，hoshi 在 7-01 集中买入 10 只「接飞刀」</strong>。根因不是选股算法崩了，而是 <strong>广度门控(收盘&gt;MA60≥20%)是滞后指标，指数见顶时广度还没跌破线，门控照常放行</strong>，等广度真正跌破(7-13)时已深套，门控只拦新仓、救不了已持仓。
+</div>
+
+<h2>1. 上证指数视角：近两月其实是「暴跌 + 弱反弹」两段</h2>
+<div class="chartbox"><canvas id="c1" role="img" aria-label="上证指数近两月走势"></canvas></div>
+<ul>
+  <li><strong>暴跌段 06-25 ~ 07-17</strong>：4120 → <span class="pos">3764</span>（-8.6%），单边无抵抗下行，7-17 见底。<span class="tag crash">hoshi 团灭区</span></li>
+  <li><strong>回升段 07-17 ~ 09-01</strong>：3764 → 3980（+5.7%），震荡回暖。此段 hoshi 只零星出手。</li>
+</ul>
+
+<h2>2. 市场广度门控：为什么没拦住 7-01 那波</h2>
+<div class="cards">
+  <div class="card"><div class="k">6-25 见顶当日广度</div><div class="v">23.9%</div><div class="s">仍 ≥20%，门控放行</div></div>
+  <div class="card"><div class="k">7-01 hoshi 买入</div><div class="v" style="color:#1f5fa8">10 只</div><div class="s">广度 25.0%，照常开仓</div></div>
+  <div class="card"><div class="k">广度跌破 20%</div><div class="v">07-13</div><div class="s">滞后见顶约 13 个交易日</div></div>
+  <div class="card"><div class="k">7-17 广度谷底</div><div class="v">8.3%</div><div class="s">此时 10 只已深套</div></div>
+</div>
+<div class="find">
+<strong>诊断：</strong>广度用 <strong>MA60</strong> 计算，天然滞后于指数拐点。指数 6-25 见顶回落时，多数个股还没跌破自己的 60 日线，广度仍有 ~24%；等广度跌破 20% 线已是 7-13。而 hoshi 的「连跌企稳」信号在 <strong>下跌初段(个股刚开始从高位回落、跌幅刚够「连跌」标准)最活跃</strong>——这正是 7-01 一天爆发 10 个信号的原因。它抓的不是真超跌，而是 <strong>刚开始下跌的票</strong>。
+</div>
+
+<h2>3. 数据实证：2026-07-01 那批买入的后续</h2>
+<table>
+<tr><th>代码</th><th>评分</th><th>买入日</th><th>买入价</th><th>卖出日</th><th>卖出价</th><th>净收益率</th><th>出场</th></tr>
+<tr><td>300522</td><td>9.5</td><td>07-01</td><td>23.78</td><td>07-02</td><td>20.03</td><td class="neg">-15.9%</td><td>止损</td></tr>
+<tr><td>300687</td><td>9.0</td><td>07-01</td><td>30.73</td><td>07-02</td><td>27.92</td><td class="neg">-9.2%</td><td>止损</td></tr>
+<tr><td>300568</td><td>9.0</td><td>07-01</td><td>18.98</td><td>07-09</td><td>17.66</td><td class="neg">-7.0%</td><td>止损</td></tr>
+<tr><td>000837</td><td>9.0</td><td>07-01</td><td>11.18</td><td>07-09</td><td>10.52</td><td class="neg">-6.0%</td><td>止损</td></tr>
+<tr><td>…另有 6 只</td><td colspan="6">（全程硬止损口径下 7-01 共 10 只，单笔 -3.9% ~ -15.9% 全绿）</td></tr>
+</table>
+<p style="font-size:12.5px;color:var(--mut)">原版(第15天才止损)那批在 07-21 才离场，单笔深套 -21% ~ -56%。上方为「全程止损」口径（第1天起监控），单笔亏损已收敛到 -16% 内，但仍 10 只全亏——<strong>说明问题在「不该买的跌市里买了」，而不是止损太慢。</strong></p>
+
+<h2>4. 对比：同样的 hoshi，1 年窗口为什么能赚 +20%</h2>
+<table>
+<tr><th>买入月</th><th>笔数</th><th>盈利笔</th><th>累计盈亏</th><th>盈亏占比</th></tr>
+<tr><td>2025-11</td><td>11</td><td>4</td><td style="text-align:right">+7,157</td><td>7%</td></tr>
+<tr><td>2025-12</td><td>16</td><td>9</td><td style="text-align:right">+23,714</td><td>23%</td></tr>
+<tr><td>2026-01</td><td>7</td><td>4</td><td class="pos" style="text-align:right">+59,894</td><td>59%</td></tr>
+<tr><td>2026-03</td><td>10</td><td>6</td><td style="text-align:right">+15,172</td><td>15%</td></tr>
+<tr><td>2026-04</td><td>1</td><td>0</td><td class="neg" style="text-align:right">-12,287</td><td>-12%</td></tr>
+<tr><td>2026-08</td><td>10</td><td>6</td><td style="text-align:right">+7,782</td><td>8%</td></tr>
+<tr><td><strong>合计</strong></td><td><strong>55</strong></td><td></td><td class="pos" style="text-align:right"><strong>+101,431</strong></td><td></td></tr>
+</table>
+<div class="find">
+<strong>关键事实：</strong>全年 +20.3% 的利润里，<strong>近 6 成来自 2026-01 一个月</strong>（当时上证 3883→4163 单边上涨）。其余月份小赚小亏。也就是说 <strong>hoshi 的盈利高度依赖「上涨/反弹 beta」</strong>——它本质是个在多头市里赚 beta 的抄底策略，一旦进入下跌 regime（尤其下跌初段）就必然挨打。这不是它「失灵」，而是它的收益结构决定的。
+</div>
+
+<h2>5. 结论与可选方向</h2>
+<div class="lead" style="border-left-color:var(--red)">
+<strong>务实结论：近两月(2026-07~09)是 hoshi 最不适应的下跌 regime，硬跑两种规则都亏（-32% / -5.4%），此阶段不宜实盘。真正能改进的是「提前识别牛转熊初段」，而不是调止损参数。</strong>
+</div>
+<h3>可验证的改进方向（按性价比排序）</h3>
+<ul>
+  <li><strong>A. 加指数级 regime 闸门</strong>——开新仓前要求指数自身在均线之上/未跌破关键位(如指数&lt;MA20 或当日指数跌幅&lt;-2% 不开仓)。指数信号比广度快，能拦下 7-01 那批。需用 1 年多 regime 回测验证不误伤 1 月盈利段。</li>
+  <li><strong>B. 保留原版止盈节奏 + 全程硬止损兜底</strong>——把「第15天才止损」改成「任何时候跌到 -8.2% 硬止损」，砍尾部风险，但注意会牺牲震荡市的盈利票。</li>
+  <li><strong>C. 不实盘，仅当信号源</strong>——把 hoshi 当每日候选池，叠加人工 regime 判断，跌市空仓。</li>
+</ul>
+
+<div class="note">报告口径：全部为复盘/回测数据，非实盘。数据来自本地 baostock 全量补数(2952 万行K线)导出 5016 只白名单 A 股。三种规则实现见 scripts/：hoshi_backtest_csv.py(原版)、hoshi_backtest_fullstop.py(全程止损)、hoshi_backtest_v3.py(硬止损优先)。近两月逐笔见 r_fs_2m/、r_base_2m/；全年见 r_fs_1y/、r_base_1y/。</div>
+
+</div>
+
+<script>
+function mk(id,labels,ds){new Chart(document.getElementById(id),{data:{labels,datasets:ds},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{font:{size:11}},grid:{color:'rgba(0,0,0,.06)'}},x:{ticks:{autoSkip:true,maxTicksLimit:14,maxRotation:45,font:{size:11}}}}}})}
+const d=['06-25','07-02','07-09','07-17','07-24','07-31','08-07','08-14','08-21','08-28','09-01'];
+mk('c1',d,[{label:'上证收盘',data:[4120,4029,4037,3764,3814,3832,3940,3927,3905,3952,3980],borderColor:'#1f5fa8',backgroundColor:'#1f5fa8',borderWidth:2,pointRadius:3,tension:0.3}]);
+</script>
+</body>
+</html>

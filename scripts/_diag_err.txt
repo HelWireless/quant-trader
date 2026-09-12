@@ -1,0 +1,18 @@
+﻿鍔犺浇鐩綍 C:\Users\cody\PycharmProjects\quant-trader\scripts\hoshi_csv_long : 5262 涓?CSV
+鍏?5262 鍙爣鐨? 4198 涓氦鏄撴棩, 鍖洪棿 2009-06-01 ~ 2026-09-04
+python.exe : Traceback (most recent call last):
+所在位置 行:446 字符: 1
++ & "C:\Users\cody\.workbuddy\binaries\python\versions\3.13.12\python.e ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last) 
+   ::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  File "C:\Users\cody\PycharmProjects\quant-trader\scripts\_diag_forceclose.py"
+, line 24, in <module>
+    late = sum(n for d, n in c.items() if d >= '2025-01-01')
+  File "C:\Users\cody\PycharmProjects\quant-trader\scripts\_diag_forceclose.py"
+, line 24, in <genexpr>
+    late = sum(n for d, n in c.items() if d >= '2025-01-01')
+                                          ^^^^^^^^^^^^^^^^^
+TypeError: '>=' not supported between instances of 'datetime.date' and 'str'

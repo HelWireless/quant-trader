@@ -1,0 +1,25 @@
+{
+  "frozen_at": "2026-09-12 14:43:23",
+  "market_features": {
+    "path": "scripts/hoshi_market_features.csv",
+    "sha256": "2075030173721a830f06a69b20647ff81af5980a545cf810eda678a33be7c4e2",
+    "rows": 4203,
+    "range": "2009-06-01 ~ 2026-09-11",
+    "size": 405429
+  },
+  "hoshi_csv_long": {
+    "path": "scripts/hoshi_csv_long/",
+    "files": 5262,
+    "total_bytes": 555179440,
+    "manifest_sha256": "4291277c61b41c4d33a6686d9b3b5171f50b2ab834456ff2d3964de19a7db531"
+  },
+  "duckdb": {
+    "error": "No module named 'duckdb'"
+  },
+  "anchor_files": {
+    "hoshi_abl1_b.csv": "a6949525d84dc5f9",
+    "hoshi_abl2_b.csv": "b39830dafef2fc5f",
+    "hoshi_fix1_base.csv": "85cd4c2aef9a1604",
+    "hoshi_fix2_base.csv": "7bd913091b1d1cd8"
+  }
+}
