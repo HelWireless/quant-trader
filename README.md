@@ -12,21 +12,14 @@
 
 ## 获取代码
 
-本仓库为**私有**，他人需先被授权才能克隆：
-
-1. 管理员进入 `Settings → Collaborators → Add people`，填写对方 GitHub 用户名
-2. 对方接受邮件/站内邀请后即可克隆
+本仓库为 **Public**，**任何人无需 GitHub 账号即可克隆**：
 
 ```bash
-# 方式一：SSH（推荐，需先在本地配置好 GitHub SSH key）
-git clone git@github.com:HelWireless/quant-trader.git
-
-# 方式二：HTTPS（用户名填 GitHub 账号，密码填 Personal Access Token，不是登录密码）
 git clone https://github.com/HelWireless/quant-trader.git
 ```
 
-> 若希望任何人都能直接克隆，可在 `Settings → General → Danger Zone`
-> 把仓库改为 Public。注意：代码含交易策略与实盘逻辑，请确认无误后再改。
+> 若本机已配置 GitHub SSH key，也可用 `git clone git@github.com:HelWireless/quant-trader.git`。
+> 但注意：**SSH 方式必须有 GitHub 账号**（key 需绑定到账号），没账号的人请用上面的 HTTPS 地址。
 
 > ⚠️ **仓库只含源码，不含数据。**
 > `data/`（行情数据）、`scripts/hoshi_csv_long/`（回测 K 线长表）及所有 `*.csv`
