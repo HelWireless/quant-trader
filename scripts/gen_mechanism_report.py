@@ -4,7 +4,7 @@ import os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-OUT = os.path.join(ROOT, 'docs', 'Hoshi_机制研究报告_2026-09-10.html')
+OUT = os.path.join(ROOT, 'docs', 'Hoshi_mechanism_research_2026-09-10.html')
 
 # ============================ 数据区 ============================
 # 2x2 因子分解
