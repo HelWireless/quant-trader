@@ -106,10 +106,54 @@ for i in range(min(25, max(len(bb), len(mb)))):
              m['price'] if m else 0,
              (m.get('reason', '') or '-') if m else '-', mark))
 
-# ---------------- 模式分布 ----------------
-print('\n=== 买入时的模式分布（S3 / S4）===')
-for tag, items in (('回测', rb['buys']),
-                   ('模拟', [t for t in tl if t['side'].lower() == 'buy'])):
-    c = collections.Counter(str(t.get('mode', '?')) for t in items)
-    print('  %s: %s' % (tag, dict(c)))
+# ---------------- 买卖配对：持有期并排 ----------------
+def pair_trades(items):
+    """按 code 配对买卖，返回 [(code, buy_date, buy_price, sell_date, sell_price,
+    ret_pct, reason, days)]，按卖出日排序。"""
+    open_pos = {}
+    out = []
+    for t in items:
+        s = str(t['side']).lower()
+        if s == 'buy':
+            open_pos[t['code']] = t
+        else:
+            b = open_pos.pop(t['code'], None)
+            if b is None:
+                continue
+            out.append(dict(code=t['code'], bd=b['date'], bp=b['price'],
+                            sd=t['date'], sp=t['price'],
+                            ret=float(t['ret'] or 0), reason=t['reason'],
+                            days=(t['date'] - b['date']).days))
+    out.sort(key=lambda x: (x['sd'], x['code']))
+    return out
+
+
+pb = pair_trades(rb['trades'])
+pm = pair_trades(tl)
+print('\n=== 买卖配对（持有期）并排 —— 前 35 笔 ===')
+print('  %-3s %-11s %-8s %5s %8s %-8s | %-11s %-8s %5s %8s %-8s'
+      % ('#', '回测卖出日', '代码', '天数', '收益%', '原因',
+         '模拟卖出日', '代码', '天数', '收益%', '原因'))
+for i in range(min(35, max(len(pb), len(pm)))):
+    b = pb[i] if i < len(pb) else None
+    m = pm[i] if i < len(pm) else None
+    mark = '  <<<' if (b and m and b['code'] != m['code']) else ''
+    print('  %-3d %-11s %-8s %5s %+8.2f %-8s | %-11s %-8s %5s %+8.2f %-8s%s'
+          % (i + 1,
+             b['sd'] if b else '-', b['code'] if b else '-',
+             b['days'] if b else '-', b['ret'] if b else 0, b['reason'] if b else '-',
+             m['sd'] if m else '-', m['code'] if m else '-',
+             m['days'] if m else '-', m['ret'] if m else 0, m['reason'] if m else '-',
+             mark))
+
+# ---------------- 长持有期专项 ----------------
+print('\n=== 持有超过 15 天的持仓（回测 vs 模拟）===')
+for tag, ps in (('回测', pb), ('模拟', pm)):
+    longs = [x for x in ps if x['days'] > 15]
+    print('  %s: %d 笔' % (tag, len(longs)))
+    for x in longs:
+        print('     %s %s  买%s(%.2f) 卖%s(%.2f)  %d天  %+.2f%%  %s'
+              % (x['code'], '', x['bd'], x['bp'], x['sd'], x['sp'],
+                 x['days'], x['ret'], x['reason']))
+
 

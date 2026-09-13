@@ -20,7 +20,7 @@ from hoshi_cplus.config import (MAX_POSITION_R, MAX_SLOTS, LOT_SIZE, HEALTH_N,
                                 DEADLINE_DAY, MAX_HOLD, COMMISSION_RATE,
                                 COMMISSION_MIN, STAMP_TAX_RATE, TRANSFER_FEE_RATE,
                                 get_preset)
-from hoshi_cplus.gates import breadth_ok, breadth_value
+from hoshi_cplus.gates import breadth_ok, breadth_value, R3Gate
 
 from .protocol import (OrderRequest, COND_STOP, COND_ARM_TRAIL, COND_REBOUND,
                        COND_OPEN_SELL)
@@ -49,6 +49,7 @@ class StrategySystem(object):
         self.verbose = verbose
         self._di = {d: i for i, d in enumerate(self.dates)}
         self._pending_mode = {}
+        self.gate = R3Gate()      # 仅 use_r3_gate 的方案会用到
 
     # ------------------------------------------------------------ 账务
     def equity_cost(self):
@@ -76,28 +77,44 @@ class StrategySystem(object):
         # 查 T-1 会让所有进出场整体晚一天。广度同理用 n_above[di]。
         # 当日已发出卖出委托的持仓会腾出位置（回测里卖出是当天确定成交的）
         n_selling = len([o for o in orders if o.kind == 'SELL'])
-        if (len(self.positions) - n_selling) < MAX_SLOTS \
+
+        # ---- 与回测对齐的两处「当日出场已完成」依赖 ----
+        # 回测是「先出场、再买入」，所以 health（S3/S4 模式）与 R3 用的
+        # closed 都包含【当日已成交的卖出】。订单驱动下 A 盘前不知道当天能否
+        # 成交，故用「假设卖出委托成功 + T-1 收盘价估算收益率」近似。
+        est = list(self.closed)
+        for od in orders:
+            if od.kind != 'SELL':
+                continue
+            p0 = self.positions.get(od.code)
+            if p0 is None:
+                continue
+            # 优先用【触发价】估算，比 T-1 收盘价更贴近实际成交：
+            #   STOP -> cond_price（= entry×0.94）；其余（超时/武装/反弹）
+            #   触发价事先未知，退回 T-1 收盘近似
+            px = None
+            if od.cond_kind == COND_STOP and od.cond_price:
+                px = od.cond_price
+            else:
+                kp = self.idx_of[od.code].get(prev)
+                if kp is None:
+                    continue
+                px = self.code_bars[od.code][kp].close
+            est.append((px - p0['entry']) / p0['entry'] * 100.0)
+
+        # R3 权益回撤门控（原版启用；hoshi-cplus / 方案B 关闭）
+        gate_open = True
+        if self.preset.use_r3_gate:
+            gate_open = self.gate(est, today)
+
+        if gate_open and (len(self.positions) - n_selling) < MAX_SLOTS \
                 and breadth_ok(self.n_above[di], self.n_valid[di]):
             avail = MAX_SLOTS - (len(self.positions) - n_selling)
             cands = sorted([x for x in self.sig_by_date.get(today, ())
                             if x[0] >= self.preset.min_score
                             and x[1] not in self.positions],
                            key=lambda x: -x[0])
-            # 与回测对齐：回测是「当日出场已完成」之后才决定 S3/S4 的。
-            # 订单驱动下 A 盘前不知道当天能否成交，故用「假设卖出委托会成功 +
-            # 按 T-1 收盘价估算收益率」来近似，避免模式切换整体滞后一天
-            #（滞后会让当日买入全用 S3，而 S3 要第 14 天才武装 → 止盈整体偏晚）。
-            est = list(self.closed)
-            for od in orders:
-                if od.kind != 'SELL':
-                    continue
-                p0 = self.positions.get(od.code)
-                kp = self.idx_of[od.code].get(prev)
-                if p0 is None or kp is None:
-                    continue
-                px = self.code_bars[od.code][kp].close
-                est.append((px - p0['entry']) / p0['entry'] * 100.0)
-            recent = est[-HEALTH_N:]
+            recent = est[-HEALTH_N:]   # est 已在上方按「当日出场已完成」估算好
             health = (sum(recent) / len(recent)) if recent else None
             use_s4 = health is not None and health < HEALTH_THRESH
 
