@@ -83,7 +83,21 @@ class StrategySystem(object):
                             if x[0] >= self.preset.min_score
                             and x[1] not in self.positions],
                            key=lambda x: -x[0])
-            recent = self.closed[-HEALTH_N:]
+            # 与回测对齐：回测是「当日出场已完成」之后才决定 S3/S4 的。
+            # 订单驱动下 A 盘前不知道当天能否成交，故用「假设卖出委托会成功 +
+            # 按 T-1 收盘价估算收益率」来近似，避免模式切换整体滞后一天
+            #（滞后会让当日买入全用 S3，而 S3 要第 14 天才武装 → 止盈整体偏晚）。
+            est = list(self.closed)
+            for od in orders:
+                if od.kind != 'SELL':
+                    continue
+                p0 = self.positions.get(od.code)
+                kp = self.idx_of[od.code].get(prev)
+                if p0 is None or kp is None:
+                    continue
+                px = self.code_bars[od.code][kp].close
+                est.append((px - p0['entry']) / p0['entry'] * 100.0)
+            recent = est[-HEALTH_N:]
             health = (sum(recent) / len(recent)) if recent else None
             use_s4 = health is not None and health < HEALTH_THRESH
 
@@ -200,7 +214,8 @@ class StrategySystem(object):
                 self.trade_log.append(dict(
                     date=r.date, code=code, name=self.names.get(code, ''),
                     side='BUY', price=r.fill_price, shares=r.shares, amount=gross,
-                    fee=r.fee, deviation=r.deviation, reason=r.reason, pnl='', ret=''))
+                    fee=r.fee, deviation=r.deviation, reason=r.reason,
+                    mode=self.positions[code]['mode'], pnl='', ret=''))
 
             elif r.kind == 'SELL' and r.status == 'FILLED':
                 pos = self.positions.pop(code, None)
