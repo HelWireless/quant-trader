@@ -2,6 +2,43 @@
 
 股票量化交易工具 — 行情数据获取、技术指标分析、策略回测一体化。
 
+## 核心策略：hoshi-cplus
+
+**hoshi-cplus** 是本仓库的现役 A 股**超跌反弹**策略。
+研究阶段曾记作「**方案 B′ / B' / Bp**」，自 2026-09-13 起统一命名为 **hoshi-cplus**（两者完全等价）。
+
+- 代码：`hoshi_cplus/`（纯标准库，零第三方依赖，含回测引擎与命令行）
+- 策略说明：`hoshi_cplus/README.md`
+- 命名规范：`docs/Hoshi_策略命名_hoshi-cplus.md`
+- 研究报告：`docs/Hoshi_终局报告_2026-09-13.md`
+- 二次验证：`docs/Hoshi_二次验证_180窗_2026-09-13.md`
+
+```python
+from hoshi_cplus import Strategy
+
+s = Strategy('scripts/hoshi_csv_2005', preset='cplus')
+r = s.run('2011-03-01', '2016-02-29')
+print(r['ret'])        # 收益率 %
+```
+
+```bash
+python -m hoshi_cplus --data scripts/hoshi_csv_2005 --preset cplus \
+    --start 2011-03-01 --end 2016-02-29
+```
+
+**180 窗验证**（数据 2005 起，5310 只，179 个随机窗口）：
+
+| 方案 | 几何收益 | 最差窗 | 负收益窗 |
+|---|---:|---:|---:|
+| 原版 | +15.82% | −33.53% | 68/179 |
+| 方案 B | +89.19% | −8.11% | 13/179 |
+| **hoshi-cplus** | **+109.07%** | **−6.78%** | **4/179** |
+
+hoshi-cplus 相对方案 B **+24.39pp**（胜 160/179，t=11.83，p=5.8e-29）。
+
+> ⚠️ 历史文档中出现的「方案 B′ / B' / Bp / C 配置」均指 **hoshi-cplus**，
+> 对照表见 `docs/Hoshi_策略命名_hoshi-cplus.md`。
+
 ## 技术栈
 
 - **Web 框架**: FastAPI + Uvicorn
@@ -48,6 +85,15 @@ uvicorn app.main:app --reload
 
 ```
 quant-trader/
+├── hoshi_cplus/      # ★ 现役策略：超跌反弹（纯标准库，可独立使用）
+│   ├── config.py     #   参数常量与三个方案预设
+│   ├── signals.py    #   K线形态、评分、入场信号
+│   ├── exits.py      #   出场规则
+│   ├── gates.py      #   广度门控 + R3
+│   ├── data.py       #   数据加载与预计算
+│   ├── backtest.py   #   回测引擎
+│   ├── cli.py        #   命令行入口
+│   └── selftest.py   #   零依赖自测（22 项）
 ├── app/              # FastAPI 应用
 │   ├── main.py       # 入口
 │   ├── config.py     # 配置
@@ -57,6 +103,8 @@ quant-trader/
 │   ├── strategy/     # 交易策略
 │   ├── backtest/     # 回测引擎
 │   └── analysis/     # 技术指标
+├── scripts/          # 研究脚本、数据管道与历史回测器
+├── docs/             # 研究报告
 └── tests/            # 测试
 ```
 
