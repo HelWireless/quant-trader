@@ -1,22 +1,27 @@
 # -*- coding: utf-8 -*-
 """hoshi-cplus 命令行入口。
 
-单窗口：
+单窗口回测：
     python -m hoshi_cplus --data scripts/hoshi_csv_2005 --preset cplus \
         --start 2011-03-01 --end 2016-02-29
 
-批量（多方案 × 多窗口）：
+批量回测：
     python -m hoshi_cplus --data scripts/hoshi_csv_2005 \
         --windows scripts/windows_180.csv \
         --schemes cplus,B,original --out out.csv
+
+实盘信号扫描（输出买入指令单）：
+    python -m hoshi_cplus --data scripts/hoshi_csv_2005 --scan 2026-09-11
+    python -m hoshi_cplus --data scripts/hoshi_csv_2005 --scan-last 15
 """
 import argparse
 import csv
 import sys
 
 from .backtest import run_backtest
-from .config import PRESETS, TOTAL_CAPITAL, get_preset
+from .config import TOTAL_CAPITAL, get_preset
 from .data import load_data, precompute
+from .orders import build_plan, render_plan, scan_signals
 
 
 def _run_batch(args, prepared, code_bars):
@@ -46,16 +51,45 @@ def _run_batch(args, prepared, code_bars):
     print('\n共 %d 窗次 -> %s' % (n, args.out))
 
 
+def _run_scan(args, prepared, code_bars, names, days):
+    """信号扫描：输出可直接照做的买入指令单。"""
+    dates = prepared[0]
+    p = get_preset(args.preset)
+    total = 0
+    for day in days:
+        res = scan_signals(prepared, code_bars, names, day, p,
+                           equity=args.capital, held=(), max_slots=10)
+        if res is None:
+            continue
+        bv = ('%.1f%%' % res['breadth']) if res['breadth'] is not None else '样本不足'
+        print()
+        print('=' * 70)
+        print('信号扫描   %s    方案 %s' % (day, p.name))
+        print('市场广度   %s   → 门控 %s（阈值 20%%）'
+              % (bv, '通过' if res['breadth_pass'] else '未通过 (不开新仓)'))
+        print('=' * 70)
+        if not res['candidates']:
+            print('（当日无合格买入信号）')
+            continue
+        print('候选 %d 只：\n' % len(res['candidates']))
+        for c in res['candidates']:
+            print(render_plan(build_plan(c, dates, p)))
+            total += 1
+    print('\n共 %d 条买入指令单' % total)
+
+
 def main(argv=None):
-    ap = argparse.ArgumentParser(prog='hoshi-cplus', description='hoshi-cplus 策略回测')
+    ap = argparse.ArgumentParser(prog='hoshi-cplus', description='hoshi-cplus 策略')
     ap.add_argument('--data', default='scripts/hoshi_csv_2005', help='日线 CSV 目录')
-    ap.add_argument('--preset', default='cplus', help='方案名（cplus / B / original）')
-    ap.add_argument('--start', help='窗口起始日 YYYY-MM-DD')
-    ap.add_argument('--end', help='窗口结束日 YYYY-MM-DD')
+    ap.add_argument('--preset', default='cplus', help='方案（cplus / B / original）')
+    ap.add_argument('--start', help='回测起始日 YYYY-MM-DD')
+    ap.add_argument('--end', help='回测结束日 YYYY-MM-DD')
     ap.add_argument('--capital', type=float, default=TOTAL_CAPITAL)
-    ap.add_argument('--windows', help='批量模式：窗口 CSV（start,end,len_months）')
-    ap.add_argument('--schemes', default='cplus', help='批量模式：逗号分隔的方案名')
+    ap.add_argument('--windows', help='批量模式：窗口 CSV')
+    ap.add_argument('--schemes', default='cplus', help='批量模式：逗号分隔方案名')
     ap.add_argument('--out', default='hoshi_cplus_out.csv', help='批量模式输出')
+    ap.add_argument('--scan', help='信号扫描：信号日 YYYY-MM-DD')
+    ap.add_argument('--scan-last', type=int, help='信号扫描：最近 N 个交易日')
     args = ap.parse_args(argv)
 
     print('加载数据: %s' % args.data)
@@ -67,8 +101,17 @@ def main(argv=None):
         _run_batch(args, prepared, code_bars)
         return 0
 
+    if args.scan or args.scan_last:
+        # 注意：dates 里是 datetime.date 对象，字符串比不进去
+        from datetime import date as _date
+        dates = prepared[0]
+        days = ([_date.fromisoformat(args.scan)] if args.scan
+                else dates[-args.scan_last:])
+        _run_scan(args, prepared, code_bars, names, days)
+        return 0
+
     if not (args.start and args.end):
-        ap.error('单窗口模式需要 --start 与 --end')
+        ap.error('需要 --start/--end（回测）或 --scan / --scan-last（信号扫描）')
 
     p = get_preset(args.preset)
     r = run_backtest(prepared, preset=args.preset, start=args.start, end=args.end,
