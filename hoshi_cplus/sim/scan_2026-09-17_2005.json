@@ -1,0 +1,112 @@
+{
+  "dir": "scripts/hoshi_csv_2005",
+  "confirm_day": "2026-09-17",
+  "n_valid": 4983,
+  "n_above": 2240,
+  "breadth": 44.95283965482641,
+  "breadth_pass": true,
+  "all_hits": [
+    {
+      "code": "300970",
+      "name": "华绿生物",
+      "score": 9.5,
+      "close": 17.14,
+      "chg": 4.321363359707853,
+      "at_high": false,
+      "limit_up": false
+    },
+    {
+      "code": "000011",
+      "name": "深物业A",
+      "score": 9.0,
+      "close": 8.93,
+      "chg": 6.436233611442188,
+      "at_high": false,
+      "limit_up": false
+    },
+    {
+      "code": "300061",
+      "name": "旗天科技",
+      "score": 9.0,
+      "close": 6.82,
+      "chg": 7.911392405063289,
+      "at_high": false,
+      "limit_up": false
+    },
+    {
+      "code": "600108",
+      "name": "亚盛集团",
+      "score": 9.0,
+      "close": 4.23,
+      "chg": 6.818181818181834,
+      "at_high": false,
+      "limit_up": false
+    },
+    {
+      "code": "600822",
+      "name": "上海物贸",
+      "score": 9.0,
+      "close": 9.38,
+      "chg": 9.964830011723347,
+      "at_high": true,
+      "limit_up": true
+    }
+  ],
+  "candidates": [
+    {
+      "code": "300970",
+      "name": "华绿生物",
+      "score": 9.5,
+      "close": 17.14,
+      "chg": 4.321363359707853,
+      "at_high": false,
+      "limit_up": false,
+      "shares": 1700,
+      "est_amount": 29138.0
+    },
+    {
+      "code": "000011",
+      "name": "深物业A",
+      "score": 9.0,
+      "close": 8.93,
+      "chg": 6.436233611442188,
+      "at_high": false,
+      "limit_up": false,
+      "shares": 3300,
+      "est_amount": 29469.0
+    },
+    {
+      "code": "300061",
+      "name": "旗天科技",
+      "score": 9.0,
+      "close": 6.82,
+      "chg": 7.911392405063289,
+      "at_high": false,
+      "limit_up": false,
+      "shares": 4400,
+      "est_amount": 30008.0
+    },
+    {
+      "code": "600108",
+      "name": "亚盛集团",
+      "score": 9.0,
+      "close": 4.23,
+      "chg": 6.818181818181834,
+      "at_high": false,
+      "limit_up": false,
+      "shares": 7100,
+      "est_amount": 30033.000000000004
+    },
+    {
+      "code": "600822",
+      "name": "上海物贸",
+      "score": 9.0,
+      "close": 9.38,
+      "chg": 9.964830011723347,
+      "at_high": true,
+      "limit_up": true,
+      "shares": 3200,
+      "est_amount": 30016.000000000004
+    }
+  ]
+}

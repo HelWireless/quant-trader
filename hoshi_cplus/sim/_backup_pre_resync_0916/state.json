@@ -1,0 +1,107 @@
+{
+  "start_capital": 300000.0,
+  "start_date": "2026-09-15",
+  "cash": 157651.12167500003,
+  "positions": [
+    {
+      "code": "002365",
+      "entry": 14.302,
+      "shares": 1900,
+      "cost": 27173.8,
+      "hold_day": 2,
+      "peak": 14.302,
+      "armed": false,
+      "trail_pct": 1.2,
+      "loss_armed": false,
+      "trough": 14.302,
+      "mode": "S3",
+      "score": 0.0,
+      "name": "永安药业",
+      "buy_date": "2026-09-15"
+    },
+    {
+      "code": "300901",
+      "entry": 18.593,
+      "shares": 1500,
+      "cost": 27889.5,
+      "hold_day": 2,
+      "peak": 18.593,
+      "armed": false,
+      "trail_pct": 1.2,
+      "loss_armed": false,
+      "trough": 18.593,
+      "mode": "S3",
+      "score": 0.0,
+      "name": "中胤时尚",
+      "buy_date": "2026-09-15"
+    },
+    {
+      "code": "002631",
+      "entry": 10.2,
+      "shares": 2900,
+      "cost": 29579.999999999996,
+      "hold_day": 1,
+      "peak": 10.2,
+      "armed": false,
+      "trail_pct": 1.2,
+      "loss_armed": false,
+      "trough": 10.2,
+      "mode": "S3",
+      "score": 0.0,
+      "name": "德尔未来",
+      "buy_date": "2026-09-16"
+    },
+    {
+      "code": "301216",
+      "entry": 17.59,
+      "shares": 1600,
+      "cost": 28144.0,
+      "hold_day": 1,
+      "peak": 17.59,
+      "armed": false,
+      "trail_pct": 1.2,
+      "loss_armed": false,
+      "trough": 17.59,
+      "mode": "S3",
+      "score": 0.0,
+      "name": "万凯新材",
+      "buy_date": "2026-09-16"
+    },
+    {
+      "code": "300647",
+      "entry": 7.77,
+      "shares": 3800,
+      "cost": 29526.0,
+      "hold_day": 1,
+      "peak": 7.77,
+      "armed": false,
+      "trail_pct": 1.2,
+      "loss_armed": false,
+      "trough": 7.77,
+      "mode": "S3",
+      "score": 0.0,
+      "name": "超频三",
+      "buy_date": "2026-09-16"
+    }
+  ],
+  "pending": [],
+  "last_day": "2026-09-16",
+  "history": [
+    {
+      "date": "2026-09-15",
+      "cash": 244922.93,
+      "mkt_value": 53623.0,
+      "equity": 298545.93,
+      "ret_vs_start": -0.004847,
+      "n_pos": 2
+    },
+    {
+      "date": "2026-09-16",
+      "cash": 157651.12,
+      "mkt_value": 145201.0,
+      "equity": 302852.12,
+      "ret_vs_start": 0.009507,
+      "n_pos": 5
+    }
+  ]
+}

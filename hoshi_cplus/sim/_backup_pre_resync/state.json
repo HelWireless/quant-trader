@@ -1,0 +1,67 @@
+{
+  "start_capital": 300000.0,
+  "start_date": "2026-09-15",
+  "cash": 212807.20724999998,
+  "positions": [
+    {
+      "code": "002365",
+      "entry": 14.42,
+      "shares": 2000,
+      "cost": 28840.0,
+      "hold_day": 1,
+      "peak": 14.42,
+      "armed": false,
+      "trail_pct": 1.2,
+      "loss_armed": false,
+      "trough": 14.42,
+      "mode": "S3",
+      "score": 0.0,
+      "name": "永安药业",
+      "buy_date": "2026-09-15"
+    },
+    {
+      "code": "300901",
+      "entry": 18.53,
+      "shares": 1600,
+      "cost": 29648.0,
+      "hold_day": 1,
+      "peak": 18.53,
+      "armed": false,
+      "trail_pct": 1.2,
+      "loss_armed": false,
+      "trough": 18.53,
+      "mode": "S3",
+      "score": 0.0,
+      "name": "中胤时尚",
+      "buy_date": "2026-09-15"
+    },
+    {
+      "code": "300736",
+      "entry": 31.87,
+      "shares": 900,
+      "cost": 28683.0,
+      "hold_day": 1,
+      "peak": 31.87,
+      "armed": false,
+      "trail_pct": 1.2,
+      "loss_armed": false,
+      "trough": 31.87,
+      "mode": "S3",
+      "score": 0.0,
+      "name": "百邦科技",
+      "buy_date": "2026-09-15"
+    }
+  ],
+  "pending": [],
+  "last_day": "2026-09-15",
+  "history": [
+    {
+      "date": "2026-09-15",
+      "cash": 212807.21,
+      "mkt_value": 86137.0,
+      "equity": 298944.21,
+      "ret_vs_start": -0.003519,
+      "n_pos": 3
+    }
+  ]
+}

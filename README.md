@@ -39,6 +39,18 @@ hoshi-cplus 相对方案 B **+24.39pp**（胜 160/179，t=11.83，p=5.8e-29）�
 > ⚠️ 历史文档中出现的「方案 B′ / B' / Bp / C 配置」均指 **hoshi-cplus**，
 > 对照表见 `docs/Hoshi_策略命名_hoshi-cplus.md`。
 
+## 邮件驱动纸面模拟（`hoshi_cplus/sim/`）
+
+用 hoshi-cplus 策略 + 每日 QQ 邮件「Hoshi实盘」指导，做 **30 万本金、1 个月**的前瞻性纸面交易。
+
+- 引擎：`hoshi_cplus/sim/mail_trader.py`（`init` / `set-pending` / `run` / `status`）
+- 说明：`hoshi_cplus/sim/README.md`
+- **⚠️ 其他 agent 必读**：[`docs/Hoshi_邮件纸面模拟_说明与决策_2026-09-17.md`](docs/Hoshi_邮件纸面模拟_说明与决策_2026-09-17.md)
+  —— 解释了**为什么「服务器邮件的买入清单」和「用同一套 hoshi-cplus 本地复算」会不一致**
+  （结论：两边同策略，但**服务器邮件当天扫描不全**；本项目**以本地复算为准**并剔除涨停）。
+
+---
+
 ## 技术栈
 
 - **Web 框架**: FastAPI + Uvicorn
