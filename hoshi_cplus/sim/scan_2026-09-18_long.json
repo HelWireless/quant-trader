@@ -1,0 +1,32 @@
+{
+  "dir": "scripts/hoshi_csv_long",
+  "confirm_day": "2026-09-18",
+  "n_valid": 4983,
+  "n_above": 2524,
+  "breadth": 50.652217539634755,
+  "breadth_pass": true,
+  "all_hits": [
+    {
+      "code": "301003",
+      "name": "江苏博云",
+      "score": 9.5,
+      "close": 54.41,
+      "chg": 3.539486203615594,
+      "at_high": false,
+      "limit_up": false
+    }
+  ],
+  "candidates": [
+    {
+      "code": "301003",
+      "name": "江苏博云",
+      "score": 9.5,
+      "close": 54.41,
+      "chg": 3.539486203615594,
+      "at_high": false,
+      "limit_up": false,
+      "shares": 300,
+      "est_amount": 16322.999999999998
+    }
+  ]
+}

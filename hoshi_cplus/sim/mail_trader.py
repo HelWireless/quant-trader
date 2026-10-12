@@ -31,7 +31,7 @@ if _ROOT not in sys.path:
 
 from hoshi_cplus.config import (get_preset, MAX_POSITION_R, MAX_SLOTS, LOT_SIZE,
                                 COMMISSION_RATE, COMMISSION_MIN, STAMP_TAX_RATE,
-                                TRANSFER_FEE_RATE)
+                                TRANSFER_FEE_RATE, HEALTH_N, HEALTH_THRESH)
 from hoshi_cplus.exits import new_position, step_exit
 
 DEFAULT_STATE = os.path.join(_HERE, 'state.json')
@@ -135,7 +135,7 @@ def _append_csv(path, header, row):
 def cmd_init(args):
     st = dict(start_capital=float(args.capital), start_date=args.start,
               cash=float(args.capital), positions=[], pending=[],
-              last_day=None, history=[])
+              last_day=None, history=[], closed=[])
     save_state(st, args.state)
     print('已建仓：本金 %.0f 元，起始日 %s，状态 → %s' % (args.capital, args.start, args.state))
 
@@ -223,7 +223,12 @@ def cmd_run(args):
                     continue
             fee = buy_fees(code, o, shares)
             st['cash'] -= shares * o + fee
-            pos = new_position(code, o, shares, shares * o, mode='S3', score=item.get('score', 0.0))
+            # 模式判定（与回测一致）：最近 10 笔已完成交易平均收益 < −1% → S4（随时武装），否则 S3
+            recent = st.setdefault('closed', [])[-HEALTH_N:]
+            health = (sum(recent) / len(recent)) if recent else None
+            use_s4 = health is not None and health < HEALTH_THRESH
+            pos = new_position(code, o, shares, shares * o,
+                               mode='S4' if use_s4 else 'S3', score=item.get('score', 0.0))
             pos['name'] = item['name']
             pos['buy_date'] = d
             # 买入当天推进一次 hold_day（COUNT_ENTRY_DAY，当日不可卖）
@@ -246,6 +251,8 @@ def cmd_run(args):
             if res:
                 price, reason = res
                 proceeds = pos['shares'] * price - sell_fees(pos['code'], price, pos['shares'])
+                ret = (proceeds - pos['cost']) / pos['cost'] * 100.0 if pos['cost'] > 0 else 0.0
+                st.setdefault('closed', []).append(ret)      # 供 S3/S4 健康度判定
                 st['cash'] += proceeds
                 st['positions'].remove(pos)
                 acted.append('卖出 %s %s @%.3f ×%d [%s]' % (pos['code'], pos['name'], price, pos['shares'], reason))
@@ -298,12 +305,38 @@ def cmd_status(args):
         for pos in st['positions']:
             c = close_of(pos['code'], st['last_day']) if st['last_day'] else pos['entry']
             pnl = (c / pos['entry'] - 1) * 100 if c else 0
+            tag = ''
+            if pos.get('armed'):
+                trail = pos['peak'] * (1 - pos['trail_pct'] / 100.0)
+                tag = ('准备卖出(止盈线%.3f)' % trail) if c <= trail else ('跟踪止盈中(线%.3f)' % trail)
             print('  %s %-8s %6d股 成本%.3f 现价%.3f 浮盈%+.2f%% 持%d天 %s'
                   % (pos['code'], pos.get('name', ''), pos['shares'], pos['entry'], c, pnl,
-                     pos['hold_day'], '已武装' if pos['armed'] else ''))
+                     pos['hold_day'], tag))
     if st['pending']:
         print('待买入（下一交易日）：%s' % ', '.join('%s %s' % (x['code'], x['name']) for x in st['pending']))
     print('=' * 70)
+
+
+def cmd_capital(args):
+    """资金池管理：重置基准（剔除未投入本策略的资金）/ 追加资金。"""
+    st = load_state(args.state)
+    if args.rebase:
+        eq = st['history'][-1]['equity'] if st['history'] else st['cash']
+        old = st['start_capital']
+        st['start_capital'] = round(eq, 2)
+        st.setdefault('baseline_resets', []).append(
+            dict(date=st.get('last_day'), frm=old, to=st['start_capital']))
+        save_state(st, args.state)
+        print('基准重置：起始本金 %.2f → %.2f（= 当前资金池权益，剔除未投入本策略的资金）'
+              % (old, st['start_capital']))
+    if args.add:
+        amt = float(args.add)
+        st['cash'] += amt
+        st['start_capital'] += amt
+        save_state(st, args.state)
+        print('追加资金 %.2f → 现金 %.2f，起始本金 %.2f'
+              % (amt, st['cash'], st['start_capital']))
+    cmd_status(args)
 
 
 def main():
@@ -321,6 +354,12 @@ def main():
     a = sub.add_parser('run'); a.add_argument('day'); a.set_defaults(func=cmd_run)
 
     a = sub.add_parser('status'); a.set_defaults(func=cmd_status)
+
+    a = sub.add_parser('capital', help='资金池：重置基准 / 追加资金')
+    a.add_argument('--rebase', action='store_true',
+                   help='把起始本金重置为当前资金池权益（剔除未投入本策略的资金）')
+    a.add_argument('--add', type=float, default=0.0, help='追加资金（现金与起始本金同增）')
+    a.set_defaults(func=cmd_capital)
 
     args = ap.parse_args()
     args.func(args)

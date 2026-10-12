@@ -66,10 +66,20 @@ python hoshi_cplus/sim/resync.py --day 2026-09-15 \
     --positions "002365:永安药业:1900:14.302,300901:中胤时尚:1500:18.593" \
     --note "300736 未成交；按实盘成本价修正"
 
+# 当日有卖出时必须用 --sells 显式登记（--positions 只表达"对账后仍持有的仓位"）
+python hoshi_cplus/sim/resync.py --day 2026-09-21 \
+    --positions "002365:永安药业:1900:14.302:2026-09-15,..." \
+    --sells "300647:超频三:8.14:3500,300901:中胤时尚:17.71:1500" \
+    --cash 95013.71 --mode S4 --note "09-21 早盘卖出对账"
+
 # live 信号扫描（用最新一根收盘当确认日，执行日 = 下一交易日）
 python scripts/hoshi_scan_live.py --data scripts/hoshi_csv_2005 \
     --held 002365,300901 --equity 298545.93 --json hoshi_cplus/sim/scan_2026-09-16.json
 ```
+
+> **`resync.py` 是幂等的**：同日重跑会用 `--positions/--sells` **完全重建**该日的持仓、流水与台账行。
+> 因此标准做法是 **盘中先对一次账（拿到实盘成交）→ 收盘后再跑同一条命令把该日刷成收盘口径**。
+> 重跑会清空 `pending`，所以要在 `set-pending` **之前**跑。
 
 
 ## 规则
@@ -88,7 +98,14 @@ python scripts/hoshi_scan_live.py --data scripts/hoshi_csv_2005 \
 python hoshi_cplus/sim/mail_trader.py init --capital 300000 --start 2026-09-15
 python hoshi_cplus/sim/mail_trader.py set-pending --for 2026-09-15 "002365:永安药业,300901:中胤时尚,300736:百邦科技"
 python hoshi_cplus/sim/mail_trader.py run 2026-09-15      # 处理该交易日起的所有缺口日
+python hoshi_cplus/sim/mail_trader.py capital --rebase    # 重置基准=当前资金池权益（剔除未投入本策略的资金）
+python hoshi_cplus/sim/mail_trader.py capital --add 10000 # 追加资金 1 万（现金与基准同增，不影响既有收益率）
+python hoshi_cplus/sim/report.py                        # 汇总结果 → report.md + trades_paired.csv
 python hoshi_cplus/sim/mail_trader.py status
 ```
+
+> **资金池语义**：本模拟追踪的是「投入 hoshi-cplus 的那部分资金」。真实账户里被**非本策略标的**占用的钱
+> 不计入——用 `capital --rebase` 把基准重置为当前资金池，之后通过 `capital --add` 追加资金。
+> 与真实成交对账用 `resync.py`（支持 `--cash` 指定可用现金、`--mode S3|S4` 指定出场模式）。
 
 > 跑之前确保 `data/tdx.duckdb` 已刷新到目标交易日（`scripts/refresh_tdx_duckdb.py` + 清 9998 脏行）。

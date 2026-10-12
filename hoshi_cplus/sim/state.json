@@ -1,112 +1,75 @@
 {
-  "start_capital": 300000.0,
+  "start_capital": 203101.0,
   "start_date": "2026-09-15",
-  "cash": 165968.40047499997,
+  "cash": 125517.95844049999,
   "positions": [
     {
-      "code": "002365",
-      "entry": 14.302,
-      "shares": 1900,
-      "cost": 27173.8,
+      "code": "000031",
+      "entry": 2.36,
+      "shares": 8800,
+      "cost": 20768.0,
+      "hold_day": 4,
+      "peak": 2.36,
+      "armed": false,
+      "trail_pct": 1.2,
+      "loss_armed": false,
+      "trough": 2.36,
+      "mode": "S3",
+      "score": 0.0,
+      "name": "大悦城",
+      "buy_date": "2026-09-30"
+    },
+    {
+      "code": "600503",
+      "entry": 2.57,
+      "shares": 8100,
+      "cost": 20817.0,
       "hold_day": 3,
-      "peak": 14.302,
+      "peak": 2.57,
       "armed": false,
       "trail_pct": 1.2,
       "loss_armed": false,
-      "trough": 14.302,
+      "trough": 2.57,
       "mode": "S3",
       "score": 0.0,
-      "name": "永安药业",
-      "buy_date": "2026-09-15"
+      "name": "华丽家族",
+      "buy_date": "2026-10-08"
     },
     {
-      "code": "300901",
-      "entry": 18.593,
-      "shares": 1500,
-      "cost": 27889.5,
-      "hold_day": 3,
-      "peak": 18.593,
-      "armed": false,
-      "trail_pct": 1.2,
-      "loss_armed": false,
-      "trough": 18.593,
-      "mode": "S3",
-      "score": 0.0,
-      "name": "中胤时尚",
-      "buy_date": "2026-09-15"
-    },
-    {
-      "code": "002631",
-      "entry": 10.732,
-      "shares": 2400,
-      "cost": 25756.8,
+      "code": "603686",
+      "entry": 14.87,
+      "shares": 1400,
+      "cost": 20818.0,
       "hold_day": 2,
-      "peak": 10.732,
+      "peak": 14.87,
       "armed": false,
       "trail_pct": 1.2,
       "loss_armed": false,
-      "trough": 10.732,
+      "trough": 14.87,
       "mode": "S3",
       "score": 0.0,
-      "name": "德尔未来",
-      "buy_date": "2026-09-16"
+      "name": "XD福龙马",
+      "buy_date": "2026-10-09"
     },
     {
-      "code": "300647",
-      "entry": 7.761,
-      "shares": 3500,
-      "cost": 27163.5,
-      "hold_day": 2,
-      "peak": 7.761,
+      "code": "603151",
+      "entry": 18.65,
+      "shares": 1100,
+      "cost": 20515.0,
+      "hold_day": 1,
+      "peak": 18.65,
       "armed": false,
       "trail_pct": 1.2,
       "loss_armed": false,
-      "trough": 7.761,
+      "trough": 18.65,
       "mode": "S3",
       "score": 0.0,
-      "name": "超频三",
-      "buy_date": "2026-09-16"
-    },
-    {
-      "code": "301216",
-      "entry": 17.343,
-      "shares": 1500,
-      "cost": 26014.5,
-      "hold_day": 2,
-      "peak": 17.343,
-      "armed": false,
-      "trail_pct": 1.2,
-      "loss_armed": false,
-      "trough": 17.343,
-      "mode": "S3",
-      "score": 0.0,
-      "name": "万凯新材",
-      "buy_date": "2026-09-16"
+      "name": "邦基科技",
+      "buy_date": "2026-10-12"
     }
   ],
-  "pending": [
-    {
-      "code": "300970",
-      "name": "华绿生物",
-      "for_day": "2026-09-18"
-    },
-    {
-      "code": "000011",
-      "name": "深物业A",
-      "for_day": "2026-09-18"
-    },
-    {
-      "code": "300061",
-      "name": "旗天科技",
-      "for_day": "2026-09-18"
-    },
-    {
-      "code": "600108",
-      "name": "亚盛集团",
-      "for_day": "2026-09-18"
-    }
-  ],
-  "last_day": "2026-09-17",
+  "pending": [],
+  "last_day": "2026-10-12",
   "history": [
     {
       "date": "2026-09-15",
@@ -131,6 +94,109 @@
       "equity": 302255.4,
       "ret_vs_start": 0.007518,
       "n_pos": 5
+    },
+    {
+      "date": "2026-09-18",
+      "cash": 40000.0,
+      "mkt_value": 163101.0,
+      "equity": 203101.0,
+      "ret_vs_start": -0.322997,
+      "n_pos": 6
+    },
+    {
+      "date": "2026-09-21",
+      "cash": 95013.71,
+      "mkt_value": 114771.0,
+      "equity": 209784.71,
+      "ret_vs_start": 0.032908,
+      "n_pos": 4
+    },
+    {
+      "date": "2026-09-22",
+      "cash": 155603.77,
+      "mkt_value": 53772.0,
+      "equity": 209375.77,
+      "ret_vs_start": 0.030895,
+      "n_pos": 2
+    },
+    {
+      "date": "2026-09-23",
+      "cash": 155603.77,
+      "mkt_value": 52696.0,
+      "equity": 208299.77,
+      "ret_vs_start": 0.025597,
+      "n_pos": 2
+    },
+    {
+      "date": "2026-09-24",
+      "cash": 184022.02,
+      "mkt_value": 25575.0,
+      "equity": 209597.02,
+      "ret_vs_start": 0.031984,
+      "n_pos": 1
+    },
+    {
+      "date": "2026-09-28",
+      "cash": 208457.31,
+      "mkt_value": 0.0,
+      "equity": 208457.31,
+      "ret_vs_start": 0.026373,
+      "n_pos": 0
+    },
+    {
+      "date": "2026-09-29",
+      "cash": 208457.31,
+      "mkt_value": 0.0,
+      "equity": 208457.31,
+      "ret_vs_start": 0.026373,
+      "n_pos": 0
+    },
+    {
+      "date": "2026-09-30",
+      "cash": 187684.12,
+      "mkt_value": 21648.0,
+      "equity": 209332.12,
+      "ret_vs_start": 0.03068,
+      "n_pos": 1
+    },
+    {
+      "date": "2026-10-08",
+      "cash": 166861.71,
+      "mkt_value": 41525.0,
+      "equity": 208386.71,
+      "ret_vs_start": 0.026025,
+      "n_pos": 2
+    },
+    {
+      "date": "2026-10-09",
+      "cash": 146038.29,
+      "mkt_value": 62252.0,
+      "equity": 208290.29,
+      "ret_vs_start": 0.02555,
+      "n_pos": 3
+    },
+    {
+      "date": "2026-10-12",
+      "cash": 125517.96,
+      "mkt_value": 79419.0,
+      "equity": 204936.96,
+      "ret_vs_start": 0.00904,
+      "n_pos": 4
+    }
+  ],
+  "closed": [
+    -6.03,
+    -17.19,
+    13.134986866236776,
+    6.777819225251096,
+    4.579596210320228,
+    -6.070500000000006
+  ],
+  "baseline_resets": [
+    {
+      "date": "2026-09-18",
+      "frm": 300000.0,
+      "to": 203101.0
     }
   ]
 }

@@ -1,0 +1,119 @@
+{
+  "start_capital": 203101.0,
+  "start_date": "2026-09-15",
+  "cash": 95013.71,
+  "positions": [
+    {
+      "code": "002365",
+      "entry": 14.302,
+      "shares": 1900,
+      "cost": 27173.8,
+      "hold_day": 5,
+      "peak": 14.63,
+      "armed": false,
+      "trail_pct": 1.2,
+      "loss_armed": false,
+      "trough": 14.302,
+      "mode": "S4",
+      "score": 0.0,
+      "name": "永安药业",
+      "buy_date": "2026-09-15"
+    },
+    {
+      "code": "301216",
+      "entry": 17.343,
+      "shares": 1500,
+      "cost": 26014.5,
+      "hold_day": 4,
+      "peak": 17.93,
+      "armed": false,
+      "trail_pct": 1.2,
+      "loss_armed": false,
+      "trough": 17.343,
+      "mode": "S4",
+      "score": 0.0,
+      "name": "万凯新材",
+      "buy_date": "2026-09-16"
+    },
+    {
+      "code": "300970",
+      "entry": 16.903,
+      "shares": 1600,
+      "cost": 27044.8,
+      "hold_day": 2,
+      "peak": 19.33,
+      "armed": true,
+      "trail_pct": 1.2,
+      "loss_armed": false,
+      "trough": 16.903,
+      "mode": "S4",
+      "score": 0.0,
+      "name": "华绿生物",
+      "buy_date": "2026-09-18"
+    },
+    {
+      "code": "000011",
+      "entry": 9.061,
+      "shares": 3100,
+      "cost": 28089.1,
+      "hold_day": 2,
+      "peak": 9.56,
+      "armed": true,
+      "trail_pct": 1.2,
+      "loss_armed": false,
+      "trough": 9.061,
+      "mode": "S4",
+      "score": 0.0,
+      "name": "深物业A",
+      "buy_date": "2026-09-18"
+    }
+  ],
+  "pending": [],
+  "last_day": "2026-09-21",
+  "history": [
+    {
+      "date": "2026-09-15",
+      "cash": 244922.93,
+      "mkt_value": 53623.0,
+      "equity": 298545.93,
+      "ret_vs_start": -0.004847,
+      "n_pos": 2
+    },
+    {
+      "date": "2026-09-16",
+      "cash": 165968.4,
+      "mkt_value": 135459.0,
+      "equity": 301427.4,
+      "ret_vs_start": 0.004758,
+      "n_pos": 5
+    },
+    {
+      "date": "2026-09-17",
+      "cash": 165968.4,
+      "mkt_value": 136287.0,
+      "equity": 302255.4,
+      "ret_vs_start": 0.007518,
+      "n_pos": 5
+    },
+    {
+      "date": "2026-09-18",
+      "cash": 40000.0,
+      "mkt_value": 163101.0,
+      "equity": 203101.0,
+      "ret_vs_start": -0.322997,
+      "n_pos": 6
+    },
+    {
+      "date": "2026-09-21",
+      "cash": 95013.71,
+      "mkt_value": 113912.0,
+      "equity": 208925.71,
+      "ret_vs_start": 0.028679,
+      "n_pos": 4
+    }
+  ],
+  "closed": [
+    -6.03,
+    -17.19
+  ]
+}
